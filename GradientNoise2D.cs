@@ -154,7 +154,7 @@ namespace Icaria.Engine.Procedural
             // of the mantissa, so bitshifting the masked hash to align the second exponent
             // gives a second random float in the same range as the first.
             // this could be broken up into functions but doing so massively hurts
-            // preformance with optimizations enabled.
+            // preformance without optimizations enabled.
             int xHash, yHash;
             xHash = (llHash & Const.GradAndMask) | Const.GradOrMask;
             yHash = xHash << Const.GradShift1;
