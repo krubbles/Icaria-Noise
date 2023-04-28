@@ -5,7 +5,7 @@ namespace Icaria.Engine.Procedural
     public static partial class IcariaNoise
     {
         static readonly NoisePeriod _noPeriod = new NoisePeriod(10, 10);
-        public static unsafe (float d0, float d1, float r) WorleyNoise(float x, float y, int seed = 0)
+        public static unsafe WorleyResults WorleyNoise(float x, float y, int seed = 0)
         {
             int ix = x > 0 ? (int)x : (int)x - 1;
             int iy = y > 0 ? (int)y : (int)y - 1;
@@ -28,7 +28,7 @@ namespace Icaria.Engine.Procedural
                 Hash(lx, cy), Hash(cx, cy), Hash(rx, cy),
                 Hash(lx, uy), Hash(cx, uy), Hash(rx, uy));
         }
-        public static unsafe (float d0, float d1, float r) WorleyNoisePeriodic(float x, float y, in NoisePeriod period, int seed = 0)
+        public static unsafe WorleyResults WorleyNoisePeriodic(float x, float y, in NoisePeriod period, int seed = 0)
         {
             // See comments in GradientNoisePeriodic(). differences are documented.
             int ix = x > 0 ? (int)x : (int)x - 1;
@@ -57,7 +57,7 @@ namespace Icaria.Engine.Procedural
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe (float d0, float d1, float r) SearchNeighborhood(float fx, float fy, int llh, int lch, int lrh, int clh, int cch, int crh, int ulh, int uch, int urh)
+        static unsafe WorleyResults SearchNeighborhood(float fx, float fy, int llh, int lch, int lrh, int clh, int cch, int crh, int ulh, int uch, int urh)
         {
             // intermediate variables
             int xHash, yHash;
@@ -174,11 +174,26 @@ namespace Icaria.Engine.Procedural
             d0 = d0 < d1 ? d0 : d1;
 
             d1 = temp;
+#if UNITY_2017_1_OR_NEWER
+            d0 = UnityEngine.Mathf.Sqrt(d0);
+            d1 = UnityEngine.Mathf.Sqrt(d1);
+#else
             d0 = MathF.Sqrt(d0);
             d1 = MathF.Sqrt(d1);
+#endif
             r = ((r * Const.ZPrime1) & Const.PortionAndMask) | Const.PortionOrMask;
             float rFloat = *(float*)&r - 1f;
-            return (d0, d1, r);
+            return new WorleyResults(d0, d1, r);
+        }
+    }
+    public readonly struct WorleyResults
+    {
+        public readonly float d0, d1, r;
+        public WorleyResults(float d0, float d1, float r)
+        {
+            this.d0 = d0;
+            this.d1 = d1;
+            this.r = r;
         }
     }
 }
