@@ -5,7 +5,9 @@ namespace Icaria.Engine.Procedural
     public static partial class IcariaNoise
     {
         static readonly NoisePeriod _noPeriod = new NoisePeriod(10, 10);
-        public static unsafe WorleyResults WorleyNoise(float x, float y, int seed = 0)
+
+        /// <summary>A noise function of random polygonal cells resembling a voronoi diagram. </summary>
+        public static unsafe CellularResults CellularNoise(float x, float y, int seed = 0)
         {
             int ix = x > 0 ? (int)x : (int)x - 1;
             int iy = y > 0 ? (int)y : (int)y - 1;
@@ -28,7 +30,9 @@ namespace Icaria.Engine.Procedural
                 Hash(lx, cy), Hash(cx, cy), Hash(rx, cy),
                 Hash(lx, uy), Hash(cx, uy), Hash(rx, uy));
         }
-        public static unsafe WorleyResults WorleyNoisePeriodic(float x, float y, in NoisePeriod period, int seed = 0)
+
+        /// <summary>A periodic noise function of random polygonal cells resembling a voronoi diagram. </summary>
+        public static unsafe CellularResults WorleyNoisePeriodic(float x, float y, in NoisePeriod period, int seed = 0)
         {
             // See comments in GradientNoisePeriodic(). differences are documented.
             int ix = x > 0 ? (int)x : (int)x - 1;
@@ -38,7 +42,7 @@ namespace Icaria.Engine.Procedural
 
             ix += seed * Const.SeedPrime;
 
-            // letters stand for left/right/center/upper/lower
+            // r: right c: center l: left/lower u: upper
             // worley uses 3x3 as supposed to gradient using 2x2
             int cx = ix * period.xf;
             int rx = (cx + period.xf) >> Const.PeriodShift;
@@ -57,7 +61,7 @@ namespace Icaria.Engine.Procedural
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe WorleyResults SearchNeighborhood(float fx, float fy, int llh, int lch, int lrh, int clh, int cch, int crh, int ulh, int uch, int urh)
+        static unsafe CellularResults SearchNeighborhood(float fx, float fy, int llh, int lch, int lrh, int clh, int cch, int crh, int ulh, int uch, int urh)
         {
             // intermediate variables
             int xHash, yHash;
@@ -69,6 +73,9 @@ namespace Icaria.Engine.Procedural
             fy += 2f;
 
             // bottom row
+            // the WorleyAndMask and WorleyOrMask set the sign bit to zero so the number is poitive and 
+            // set the exponent to 1 so that the value is between 1 and 2. This is why the offsets to fx / fy
+            // range from 0 to 2 instead of -1 to 1. 
             xHash = (llh & Const.WorleyAndMask) | Const.WorleyOrMask;
             yHash = xHash << 13;
             dx = fx - *(float*)&xHash + 2f;
@@ -183,13 +190,20 @@ namespace Icaria.Engine.Procedural
 #endif
             r = ((r * Const.ZPrime1) & Const.PortionAndMask) | Const.PortionOrMask;
             float rFloat = *(float*)&r - 1f;
-            return new WorleyResults(d0, d1, r);
+            return new CellularResults(d0, d1, r);
         }
     }
-    public readonly struct WorleyResults
+    /// <summary>The results of a Cellular Noise evaluation. </summary>
+    public readonly struct CellularResults
     {
-        public readonly float d0, d1, r;
-        public WorleyResults(float d0, float d1, float r)
+        /// <summary> The distance to the closest cell center.</summary>
+        public readonly float d0;
+        /// <summary> The distance to the second-closest cell center.</summary>
+        public readonly float d1;
+        /// <summary> A random 0 - 1 value for each cell. </summary>
+        public readonly float r;
+
+        public CellularResults(float d0, float d1, float r)
         {
             this.d0 = d0;
             this.d1 = d1;
