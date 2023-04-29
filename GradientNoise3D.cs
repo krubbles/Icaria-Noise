@@ -9,13 +9,12 @@ namespace Icaria.Engine.Procedural
         public static float GradientNoiseHQ(float x, float y, int seed = 0)
         {
             // rotation from https://noiseposti.ng/posts/2022-01-16-The-Perlin-Problem-Breaking-The-Cycle.html
-            float xz = x;
-            float s2 = xz * -0.21132487f;
-            float yy = y * 0.5773502692f;
-            x += (s2 + yy);
-            y = (s2 + yy);
-            // y = xz * -0.57735027f + yy;
-
+            float xy = x + y;
+            float s2 = xy * -0.2113248f;
+            float z = xy * -0.5773502f;
+            x += s2;
+            y += s2;
+            
             // GradientNoise3D() won't get inlined automatically so its manually inlined here.
             // seems to improve preformance by around 5 to 10%
             int ix = x > 0 ? (int)x : (int)x - 1;
