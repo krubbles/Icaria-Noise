@@ -13,8 +13,8 @@ namespace Icaria.Engine.Procedural
             float s2 = xz * -0.21132487f;
             float yy = y * 0.5773502692f;
             x += (s2 + yy);
-            float z = (s2 + yy);
-            y = xz * -0.57735027f + yy;
+            y = (s2 + yy);
+            // y = xz * -0.57735027f + yy;
 
             // GradientNoise3D() won't get inlined automatically so its manually inlined here.
             // seems to improve preformance by around 5 to 10%
