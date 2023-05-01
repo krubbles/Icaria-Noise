@@ -190,7 +190,7 @@ namespace Icaria.Engine.Procedural
 #endif
             r = ((r * Const.ZPrime1) & Const.PortionAndMask) | Const.PortionOrMask;
             float rFloat = *(float*)&r - 1f;
-            return new CellularResults(d0, d1, r);
+            return new CellularResults(d0, d1, rFloat);
         }
     }
     /// <summary>The results of a Cellular Noise evaluation. </summary>
