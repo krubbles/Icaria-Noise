@@ -32,7 +32,7 @@ namespace Icaria.Engine.Procedural
         }
 
         /// <summary>A periodic noise function of random polygonal cells resembling a voronoi diagram. </summary>
-        public static unsafe CellularResults WorleyNoisePeriodic(float x, float y, in NoisePeriod period, int seed = 0)
+        public static unsafe CellularResults CellularNoisePeriodic(float x, float y, in NoisePeriod period, int seed = 0)
         {
             // See comments in GradientNoisePeriodic(). differences are documented.
             int ix = x > 0 ? (int)x : (int)x - 1;
