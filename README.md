@@ -1,4 +1,6 @@
 # Icaria-Noise
+Note: For high-preformance applications, I reccomend using the the newer version of this library instead. ([NoiseDotNet](https://github.com/krubbles/NoiseDotNet))
+
 A highly-optimized C# noise-function library. Compile with Burst if using in Unity, as Mono is very slow. 
 Include namespace Icaria.Engine.Procedural, call noise functions from static class IcariaNoise. 
 Commented to show optimizations over standard implementations.
